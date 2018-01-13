@@ -21,4 +21,9 @@ MonoBehaviour:
   - com.au.test.coins5
   - com.au.test.coins6
   - com.au.test.coins7
-  purchasesValuesList: 0a000000090000000500000004000000010000000200000009030000
+  - com.au.test.coins8
+  - com.au.test.coins9
+  - com.au.test.coins10
+  - com.au.test.coins11
+  - com.au.test.coins12
+  purchasesValuesList: 0a0000000900000005000000040000000100000002000000090300006f00000002000000000000000400000001000000

@@ -47,6 +47,10 @@ public class ScriptableUserDataEditor : Editor {
       }
     }
 
+    if(GUILayout.Button("Save", GUILayout.Width(100))) {
+      AssetDatabase.SaveAssets();
+    }
+
     if(EditorGUI.EndChangeCheck()) {
       SerializedUserData.ApplyModifiedProperties();
     }
