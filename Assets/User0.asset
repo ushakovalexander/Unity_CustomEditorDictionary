@@ -9,7 +9,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f9cd55a886516b42ba6fcedcde01dec, type: 3}
-  m_Name: New Scriptable User Data
+  m_Name: User0
   m_EditorClassIdentifier: 
-  userName: foo
-  userId: 123
+  userName: AU
+  userId: 8030a9b8-325b-4646-83e3-1bc769ec84f2
+  purchasesKeysList:
+  - com.au.test.coins1
+  - com.au.test.coins2
+  - com.au.test.coins3
+  - com.au.test.coins4
+  - com.au.test.coins5
+  - com.au.test.coins6
+  - com.au.test.coins7
+  purchasesValuesList: 0a000000090000000500000004000000010000000200000009030000

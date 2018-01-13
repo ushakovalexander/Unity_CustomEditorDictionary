@@ -8,56 +8,79 @@ using UnityEngine;
 [CustomEditor(typeof(ScriptableUserData))]
 public class ScriptableUserDataEditor : Editor {
 
-	private SerializedObject _serializedUserData;
-	private ScriptableUserData _userData;
+  private SerializedObject _serializedUserData;
+  private ScriptableUserData _userData;
 
   public override void OnInspectorGUI() {
+    EditorGUI.BeginChangeCheck();
+    SerializedProperty userNameProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.userName));
+    SerializedProperty userIdProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.userId));
+    SerializedProperty purchasesKeysListProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.purchasesKeysList));
+    SerializedProperty purchasesValuesListProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.purchasesValuesList));
 
-		SerializedProperty userNameProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.userName));
-		SerializedProperty userIdProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.userId));
-		SerializedProperty purchasesProperty = SerializedUserData.FindProperty(GetMemberName(() => UserData.purchases));
+    EditorGUILayout.PropertyField(userNameProperty);
+    EditorGUILayout.PropertyField(userIdProperty);
 
-		EditorGUILayout.PropertyField(userNameProperty);
-		EditorGUILayout.PropertyField(userIdProperty);
+    GUIContent label = new GUIContent();
+    label.text = "Purchases count";
+    EditorGUILayout.PropertyField(purchasesKeysListProperty, label);
+    string toRemove = null;
+    if(purchasesKeysListProperty.isExpanded) {
+      for (int i = 0; i < purchasesKeysListProperty.arraySize; i++) {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("PackId", GUILayout.Width(50));
+        GUILayout.FlexibleSpace();
+        EditorGUILayout.PropertyField(purchasesKeysListProperty.GetArrayElementAtIndex(i), GUIContent.none, true, GUILayout.MinWidth(50));
+        GUILayout.Label("Count", GUILayout.Width(50));
+        GUILayout.FlexibleSpace();
+        EditorGUILayout.PropertyField(purchasesValuesListProperty.GetArrayElementAtIndex(i), GUIContent.none, true, GUILayout.MinWidth(50));
+        if(GUILayout.Button("-")) {
+          toRemove = purchasesKeysListProperty.GetArrayElementAtIndex(i).stringValue;
+        }
+        EditorGUILayout.EndHorizontal();
+      }
+      if(GUILayout.Button("+")) {
+        AddPurchase();
+      }
+      if(toRemove != null) {
+        RemovePurchase(toRemove);
+      }
+    }
 
-		SerializableDictionary<string, int> dict = UserData.purchases;
-		foreach(KeyValuePair<string, int> kvp in dict) {
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.TextField(kvp.Key);
-			EditorGUILayout.TextField(kvp.Value.ToString());
-			EditorGUILayout.EndHorizontal();
-		}
+    if(EditorGUI.EndChangeCheck()) {
+      SerializedUserData.ApplyModifiedProperties();
+    }
+  }
 
-		if(dict.Keys.Count < 3) {
-			string newKey = UnityEngine.Random.Range(0, 10).ToString();
-			if(!dict.ContainsKey(newKey)) {
-				int newValue = UnityEngine.Random.Range(0, 10);
-				dict.Add(newKey, newValue);
-			}
-		}
+  private void RemovePurchase(string key) {
+    UserData.RemovePurchase(key);
+    _serializedUserData = null;
+  }
 
-		SerializedUserData.ApplyModifiedProperties();
-	}
+  private void AddPurchase() {
+    UserData.AddPurchase();
+    _serializedUserData = null;
+  }
 
-	private SerializedObject SerializedUserData {
-		get {
-			if(_serializedUserData == null) {
-				_serializedUserData = new SerializedObject(target);
-			}
-			return _serializedUserData;
-		}
-	}
+  private SerializedObject SerializedUserData {
+    get {
+      if(_serializedUserData == null) {
+        _serializedUserData = new SerializedObject(target);
+      }
+      return _serializedUserData;
+    }
+  }
 
   public ScriptableUserData UserData {
-		get {
-			if(_userData == null) {
-				_userData = (ScriptableUserData) target;
-			}
-			return _userData;
-		}
-	}
+    get {
+      if(_userData == null) {
+        _userData = (ScriptableUserData) target;
+      }
+      return _userData;
+    }
+  }
 
   private string GetMemberName<TValue>(Expression<Func<TValue>> memberAccess) {
-		return ((MemberExpression)memberAccess.Body).Member.Name;
-	}
+    return ((MemberExpression)memberAccess.Body).Member.Name;
+  }
 }
